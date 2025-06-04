@@ -9,7 +9,7 @@ type Profile = Database['public']['Tables']['profiles']['Row'];
 type Chat = Database['public']['Tables']['chats']['Row'];
 
 export default function ChatListPage() {
-  const supabase = createClientComponentClient<supabase>()
+  const supabase = createClientComponentClient<Database>();
   const [userId, setUserId] = useState<string | null>(null)
   const [chats, setChats] = useState<(Chat & { other_user: Profile })[]>([])
   const router = useRouter()
@@ -72,7 +72,7 @@ export default function ChatListPage() {
                   cursor: 'pointer'
                 }}
               >
-                {chat.other_user.username ?? 'ユーザー名なし'}
+                {chat.other_user?.username ?? 'ユーザー名なし'}
               </button>
             </li>
           ))}
