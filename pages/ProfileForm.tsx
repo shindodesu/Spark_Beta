@@ -3,12 +3,12 @@ import { useRouter } from 'next/router';
 import { supabase } from '../lib/supabaseClient';
 
 export default function ProfileForm() {
-  const [name, setName] = useState(''); // あだ名
-  const [real_name, setRealName] = useState(''); // 本名
+  const [name, setName] = useState<string>(''); // あだ名
+  const [real_name, setRealName] = useState<string>(''); // 本名
   const [part, setPart] = useState<string[]>([]); // パート（複数選択）
-  const [region, setRegion] = useState('');
-  const [experience, setExperience] = useState('');
-  const [bio, setBio] = useState(''); // 自己紹介
+  const [region, setRegion] = useState<string>('');
+  const [experience, setExperience] = useState<string>('');
+  const [bio, setBio] = useState<string>(''); // 自己紹介
   const router = useRouter();
 
   useEffect(() => {
@@ -25,17 +25,17 @@ export default function ProfileForm() {
       if (profile) {
         setName(profile.name || '');
         setRealName(profile.real_name || '');
-        setPart(profile.part ? profile.part.split(',') : []); // カンマ区切りを配列に変換
+        setPart(profile.part ? profile.part.split(',') : []);
         setRegion(profile.region || '');
         setExperience(profile.experience_years?.toString() || '');
-        setBio(profile.bio || ''); // bioをセット
+        setBio(profile.bio || '');
       }
     };
 
     fetchProfile();
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -45,13 +45,13 @@ export default function ProfileForm() {
 
     const updates = {
       id: user.id,
-      email: user.email, // Eメールを追加
+      email: user.email,
       name,
       real_name,
-      part: part.join(','), // 配列をカンマ区切り文字列に変換
+      part: part.join(','),
       region,
       experience_years: Number(experience),
-      bio, // bioを追加
+      bio,
     };
 
     const { data: existing, error: fetchError } = await supabase

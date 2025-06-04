@@ -3,9 +3,10 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { supabase } from "../../lib/supabaseClient";
+import type { Database } from '../../lib/database.types';
 
-type Profile = supabase['public']['Tables']['profiles']['Row']
-type Chat = supabase['public']['Tables']['chats']['Row']
+type Profile = Database['public']['Tables']['profiles']['Row'];
+type Chat = Database['public']['Tables']['chats']['Row'];
 
 export default function ChatListPage() {
   const supabase = createClientComponentClient<supabase>()

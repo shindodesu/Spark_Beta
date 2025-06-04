@@ -14,6 +14,7 @@ type Band = {
   baritone?: User;
   bass?: User;
   vocalPercussion?: User;
+  [key: string]: User | undefined; // インデックスシグネチャを追加
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -21,7 +22,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  // ユーザー情報を取得
   const { data: users, error } = await supabase
     .from("users")
     .select("id, name, part");
@@ -30,7 +30,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(500).json({ error: "Failed to fetch users" });
   }
 
-  // パートごとにユーザーを分類
   const parts: Record<string, User[]> = {
     soprano: [],
     alto: [],
@@ -40,10 +39,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     vocalPercussion: [],
   };
 
-  const usedUserIds = new Set<string>(); // 重複防止用のセット
-
   users.forEach((user: User) => {
-    const userParts = user.part.split(","); // カンマ区切りのパートを配列に変換
+    const userParts = user.part.split(",");
     userParts.forEach((part) => {
       const normalizedPart = part.trim().toLowerCase();
       if (parts[normalizedPart]) {
@@ -52,26 +49,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   });
 
-  // バンド編成
   const bands: Band[] = [];
-  while (true) {
+  while (
+    parts.soprano.length ||
+    parts.alto.length ||
+    parts.tenor.length ||
+    parts.baritone.length ||
+    parts.bass.length ||
+    parts.vocalPercussion.length
+  ) {
     const band: Band = {};
 
-    // 各パートにユーザーを割り当て
     for (const part of ["soprano", "alto", "tenor", "baritone", "bass", "vocalPercussion"]) {
-      const availableUsers = parts[part].filter((user) => !usedUserIds.has(user.id));
+      const availableUsers = parts[part].filter((user) => !bands.some((b) => b[part] === user));
       if (availableUsers.length > 0) {
-        const user = availableUsers.pop(); // ユーザーを取得
+        const user = availableUsers.pop();
         if (user) {
           band[part] = user;
-          usedUserIds.add(user.id); // 使用済みとして記録
         }
       }
-    }
-
-    // バンドが不完全な場合は破棄
-    if (Object.keys(band).length < 6) {
-      break; // すべてのパートが埋まらない場合は終了
     }
 
     bands.push(band);

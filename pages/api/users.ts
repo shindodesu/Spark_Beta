@@ -1,4 +1,5 @@
 // pages/api/users.ts
+import { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@supabase/supabase-js';
 
 type User = {
@@ -11,7 +12,7 @@ const supabaseUrl = process.env.SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
     try {
       console.log('Fetching users from Supabase...');
@@ -25,7 +26,7 @@ export default async function handler(req, res) {
       }
 
       res.status(200).json(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
       res.status(500).json({ message: error.message });
     }
