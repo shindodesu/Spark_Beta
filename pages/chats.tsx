@@ -1,7 +1,7 @@
 // pages/chats.tsx
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-
+import { createBrowserSupabaseClient } from '@supabase/ssr';
 import { supabase } from "../../lib/supabaseClient";
 import type { Database } from '../../lib/database.types';
 
