@@ -2,7 +2,7 @@
 
 
 import { createClient } from '@supabase/supabase-js';
-import { Database } from './types/supabase'; // Replace with the path to your Supabase types
+import { Database } from './lib/database.types.ts'; // Replace with the path to your Supabase types
 
 
 // Supabase の URL とキーを設定
